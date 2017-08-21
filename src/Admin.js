@@ -12,7 +12,20 @@ class Admin extends Component {
     }
 
     handleDelete(e){
-        console.log(e.target)
+        e.preventDefault();
+        //console.log(e.target.title);
+        let token = sessionStorage.getItem('token');
+        let id = e.target.title;
+        fetch("http://localhost:8000/index.php/tests/"+id+"?"+"token="+token,{method:"DELETE"})
+            .then(res => {
+                console.log(res.status);
+                //return res.json();
+            })
+            .then(
+                json => {
+                    console.log(json);
+                })
+             .catch(error => "异常处理");
     }
 
     componentDidMount(){
@@ -85,6 +98,7 @@ class Admin extends Component {
                             </div>
 
                             <h2 className="sub-header">Section title</h2>
+                            <Link to={"/create" }>创建博客</Link>
                             <List blogList={this.state.blogList} handleDelete = {this.handleDelete}/>
                         </div>
                     </div>
