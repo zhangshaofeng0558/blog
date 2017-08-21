@@ -2,6 +2,7 @@ import React, { Component } from 'react';
 import { Link } from 'react-router-dom';
 class List extends Component {
   render() {
+      const handleDelete = this.props.handleDelete;
       var blogLists=[];
       this.props.blogList.forEach(function(value,key){
 
@@ -13,8 +14,7 @@ class List extends Component {
                   <td>
                       <Link to={"/view/"+value.id } >查看</Link>
                       <Link to={"/update/"+value.id }>修改</Link>
-                      <Link to={"/delete/"+value.id }>删除</Link>
-                      <button onClick={this.props.handleDelete}>删除</button>
+                      <Link to="" title={value.id} onClick={handleDelete}>删除</Link>
                   </td>
               </tr>
           )
@@ -34,8 +34,6 @@ class List extends Component {
                 {blogLists}
                 </tbody>
             </table>
-            <button onClick={this.props.handleDelete}>删除</button>
-            <button onClick={this.props.handleDelete}>删除</button>
         </div>
     );
   }

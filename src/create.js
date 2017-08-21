@@ -1,12 +1,34 @@
 import React, { Component } from 'react';
 import { Redirect } from 'react-router-dom';
-class Admin extends Component {
+import { Editor,EditorState } from 'draft-js';
+
+const styles = {
+    root: {
+        fontFamily: '\'Helvetica\', sans-serif',
+        padding: 20,
+        width: 600,
+    },
+    editor: {
+        border: '1px solid #ccc',
+        cursor: 'text',
+        minHeight: 80,
+        padding: 10,
+    },
+    button: {
+        marginTop: 10,
+        textAlign: 'center',
+    },
+};
+
+class Create extends Component {
 
     constructor(props) {
         super(props);
         this.state = {
-            blogData:'',
+            editorState: EditorState.createEmpty()
         };
+        this.onChange = (editorState) => this.setState({editorState});
+        this.handleSubmit = this.handleSubmit.bind(this);
     }
 
     componentDidMount(){
@@ -21,6 +43,12 @@ class Admin extends Component {
                 })
             .catch(error => "异常处理");
     }
+
+    handleSubmit(e){
+        e.preventDefault();
+        console.log(this.state.editorState.getCurrentContent());
+    }
+
     render() {
 
         let token = sessionStorage.getItem('token');
@@ -82,51 +110,21 @@ class Admin extends Component {
                         <div className="col-sm-9 col-sm-offset-3 col-md-10 col-md-offset-2 main">
                             <h1 className="page-header">Dashboard</h1>
 
-                            <div className="row placeholders">
-                                <div className="col-xs-6 col-sm-3 placeholder">
-                                    <img src="data:image/gif;base64,R0lGODlhAQABAIAAAHd3dwAAACH5BAAAAAAALAAAAAABAAEAAAICRAEAOw==" width="200" height="200" className="img-responsive" alt="Generic placeholder thumbnail" />
-                                        <h4>Label</h4>
-                                        <span className="text-muted">Something else</span>
+                            <div className="row">
+                                <div className="col-xs-6 col-sm-6">
+                                    <form>
+                                        <div className="form-group">
+                                            <label htmlFor="InputTitle">Title</label>
+                                            <input type="text" className="form-control" id="InputTitle" placeholder="Title" />
+                                        </div>
+                                        <div style={styles.root}>
+                                            <div style={styles.editor} >
+                                                <Editor editorState={this.state.editorState} onChange={this.onChange} placeholder="Enter some text..."/>
+                                            </div>
+                                        </div>
+                                        <button type="submit" className="btn btn-default" onClick={this.handleSubmit}>Submit</button>
+                                    </form>
                                 </div>
-                                <div className="col-xs-6 col-sm-3 placeholder">
-                                    <img src="data:image/gif;base64,R0lGODlhAQABAIAAAHd3dwAAACH5BAAAAAAALAAAAAABAAEAAAICRAEAOw==" width="200" height="200" className="img-responsive" alt="Generic placeholder thumbnail" />
-                                        <h4>Label</h4>
-                                        <span className="text-muted">Something else</span>
-                                </div>
-                                <div className="col-xs-6 col-sm-3 placeholder">
-                                    <img src="data:image/gif;base64,R0lGODlhAQABAIAAAHd3dwAAACH5BAAAAAAALAAAAAABAAEAAAICRAEAOw==" width="200" height="200" className="img-responsive" alt="Generic placeholder thumbnail" />
-                                        <h4>Label</h4>
-                                        <span className="text-muted">Something else</span>
-                                </div>
-                                <div className="col-xs-6 col-sm-3 placeholder">
-                                    <img src="data:image/gif;base64,R0lGODlhAQABAIAAAHd3dwAAACH5BAAAAAAALAAAAAABAAEAAAICRAEAOw==" width="200" height="200" className="img-responsive" alt="Generic placeholder thumbnail" />
-                                        <h4>Label</h4>
-                                        <span className="text-muted">Something else</span>
-                                </div>
-                            </div>
-
-                            <h2 className="sub-header">Section title</h2>
-                            <div className="table-responsive">
-                                <table className="table table-striped">
-                                    <thead>
-                                        <tr>
-                                            <th>#</th>
-                                            <th>Header</th>
-                                            <th>Header</th>
-                                            <th>Header</th>
-                                            <th>Header</th>
-                                        </tr>
-                                        </thead>
-                                        <tbody>
-                                        <tr>
-                                            <td>1,001</td>
-                                            <td>Lorem</td>
-                                            <td>ipsum</td>
-                                            <td>dolor</td>
-                                            <td>sit</td>
-                                        </tr>
-                                    </tbody>
-                                </table>
                             </div>
                         </div>
                     </div>
@@ -136,4 +134,4 @@ class Admin extends Component {
     }
 }
 
-export default Admin;
+export default Create;
