@@ -1,5 +1,5 @@
 import React, { Component } from 'react';
-import { Redirect ,Link} from 'react-router-dom';
+import { Link } from 'react-router-dom';
 class View extends Component {
 
     constructor(props) {
@@ -24,13 +24,6 @@ class View extends Component {
             .catch(error => "异常处理");
     }
     render() {
-        //
-        // let token = sessionStorage.getItem('token');
-        // if(!token){
-        //     return (
-        //         <Redirect to="/login"/>
-        //     )
-        // }
 
         return (
             <div>
