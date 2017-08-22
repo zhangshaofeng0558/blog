@@ -16,13 +16,13 @@ const styles = {
 
 };
 
-class Create extends Component {
+class Update extends Component {
 
     constructor(props) {
         super(props);
         this.state = {
             id:'',
-            title:'',
+            blogData:'',
             editorState: EditorState.createEmpty()
         };
         this.focus = () => this.refs.editor.focus();
@@ -32,16 +32,33 @@ class Create extends Component {
 
     }
 
-    componentDidMount(){}
+    componentDidMount(){
+
+        let id = this.props.match.params.id;
+        //console.log(id);
+        fetch("http://localhost:8000/index.php/tests/"+id)
+            .then(res => res.json())
+            .then(
+                json => {
+                    console.log(json);
+                    this.setState({
+                        blogData:json,
+                    })
+                })
+            .catch(error => "异常处理");
+    }
 
     handleTitle(e){
-        this.setState({title:e.target.value})
+        this.setState({
+            blogData:{title:e.target.value}
+        })
     }
 
     handleSubmit(e){
         e.preventDefault();
+        let id = this.props.match.params.id;
         let token = sessionStorage.getItem('token');
-        let title = this.state.title;
+        let title = this.state.blogData.title;
         let contentState = this.state.editorState.getCurrentContent();
         let content = stateToHTML(contentState);
         console.log(content);
@@ -59,14 +76,14 @@ class Create extends Component {
             return false;
         }
 
-        fetch("http://localhost:8000/index.php/tests?token="+token, {
-                method: "POST",
+        fetch("http://localhost:8000/index.php/tests/"+id+"?token="+token, {
+                method: "PUT",
                 headers:{"Content-type":"application/x-www-form-urlencoded"},
                 body: "title="+title+"&content="+content,
             })
                 .then(res => {
                     //console.log(res.status);
-                    if(res.status === 201){
+                    if(res.status === 200){
                         return res.json();
                     }
                 })
@@ -150,7 +167,7 @@ class Create extends Component {
                                     <form>
                                         <div className="form-group">
                                             <label htmlFor="InputTitle">Title</label>
-                                            <input type="text" className="form-control" id="InputTitle" placeholder="Title" value={this.state.title} onChange={this.handleTitle}/>
+                                            <input type="text" className="form-control" id="InputTitle" placeholder="Title" value={this.state.blogData.title} onChange={this.handleTitle}/>
                                         </div>
                                         <div className="form-group">
                                             <div style={styles.editor} onClick={this.focus}>
@@ -169,4 +186,4 @@ class Create extends Component {
     }
 }
 
-export default Create;
+export default Update;
