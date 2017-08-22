@@ -1,23 +1,19 @@
 import React, { Component } from 'react';
 import { Redirect } from 'react-router-dom';
 import { Editor,EditorState } from 'draft-js';
+import { stateToHTML } from 'draft-js-export-html';
+
 
 const styles = {
-    root: {
-        fontFamily: '\'Helvetica\', sans-serif',
-        padding: 20,
-        width: 600,
-    },
     editor: {
+        backgroundColor: '#fff',
         border: '1px solid #ccc',
+        borderRadius:4,
         cursor: 'text',
-        minHeight: 80,
-        padding: 10,
+        minHeight: 200,
+        padding: 5,
     },
-    button: {
-        marginTop: 10,
-        textAlign: 'center',
-    },
+
 };
 
 class Create extends Component {
@@ -25,38 +21,68 @@ class Create extends Component {
     constructor(props) {
         super(props);
         this.state = {
+            title:'',
             editorState: EditorState.createEmpty()
         };
+        this.focus = () => this.refs.editor.focus();
         this.onChange = (editorState) => this.setState({editorState});
+        this.handleTitle = this.handleTitle.bind(this);
         this.handleSubmit = this.handleSubmit.bind(this);
+
     }
 
-    componentDidMount(){
-        fetch("http://localhost:8000/index.php/tests")
-            .then(res => res.json())
-            .then(
-                json => {
-                    console.log(json);
-                     this.setState({
-                         blogData:json,
-                     })
-                })
-            .catch(error => "异常处理");
+    componentDidMount(){}
+
+    handleTitle(e){
+        this.setState({title:e.target.value})
     }
 
     handleSubmit(e){
         e.preventDefault();
-        console.log(this.state.editorState.getCurrentContent());
+        let token = sessionStorage.getItem('token');
+        let title = this.state.title;
+        let contentState = this.state.editorState.getCurrentContent();
+        let content = stateToHTML(contentState);
+        console.log(content);
+
+        if(!token){
+            console.log('无权限');
+            return false;
+        }
+        if(!title){
+            console.log('标题不能为空');
+            return false;
+        }
+        if(!content){
+            console.log('内容不能为空');
+            return false;
+        }
+
+        fetch("http://localhost:8000/index.php/tests?token="+token, {
+                method: "POST",
+                headers:{"Content-type":"application/x-www-form-urlencoded"},
+                body: "title="+title+"&content="+content,
+            })
+                .then(res => {
+                    //console.log(res.status);
+                    if(res.status === 201){
+                        return res.json();
+                    }
+                })
+                .then(json =>{
+                    window.location.href = '/view/'+json.id;
+                }).catch(error => console.log("异常处理"));
+
     }
 
     render() {
 
         let token = sessionStorage.getItem('token');
-        if(!token){
-            return (
-                <Redirect to="/login"/>
-            )
-        }
+         if(!token){
+             return (
+                 <Redirect to="/login"/>
+             )
+         }
 
         return (
             <div>
@@ -115,11 +141,11 @@ class Create extends Component {
                                     <form>
                                         <div className="form-group">
                                             <label htmlFor="InputTitle">Title</label>
-                                            <input type="text" className="form-control" id="InputTitle" placeholder="Title" />
+                                            <input type="text" className="form-control" id="InputTitle" placeholder="Title" value={this.state.title} onChange={this.handleTitle}/>
                                         </div>
-                                        <div style={styles.root}>
-                                            <div style={styles.editor} >
-                                                <Editor editorState={this.state.editorState} onChange={this.onChange} placeholder="Enter some text..."/>
+                                        <div className="form-group">
+                                            <div style={styles.editor} onClick={this.focus}>
+                                                <Editor ref="editor" editorState={this.state.editorState} onChange={this.onChange} placeholder="Enter some text..."/>
                                             </div>
                                         </div>
                                         <button type="submit" className="btn btn-default" onClick={this.handleSubmit}>Submit</button>
