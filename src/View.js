@@ -1,11 +1,14 @@
 import React, { Component } from 'react';
 import { Link } from 'react-router-dom';
+import { stateToHTML } from 'draft-js-export-html';
+import { Editor, EditorState ,convertFromRaw } from 'draft-js';
 class View extends Component {
 
     constructor(props) {
         super(props);
         this.state = {
             blogView: '',
+            a:'',
         };
     }
 
@@ -16,9 +19,10 @@ class View extends Component {
             .then(res => res.json())
             .then(
                 json => {
-                    console.log(json);
+                    console.log(convertFromRaw(JSON.parse(json.editorState)));
                      this.setState({
                          blogView:json,
+                         a:stateToHTML(convertFromRaw(JSON.parse(json.editorState))),
                      })
                 })
             .catch(error => "异常处理");
@@ -66,7 +70,7 @@ class View extends Component {
                             <div className="blog-post" >
                                 <h2 className="blog-post-title">{this.state.blogView.title}</h2>
                                 <p className="blog-post-meta"> {this.state.blogView.time} by <a href="http://v3.bootcss.com/examples/blog/#">{this.state.blogView.author}</a></p>
-                                <div dangerouslySetInnerHTML={{__html: this.state.blogView.content}} />
+                                <div dangerouslySetInnerHTML={{__html: this.state.a}} />
                             </div>
                         </div>
                     </div>

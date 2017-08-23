@@ -1,8 +1,7 @@
 import React, { Component } from 'react';
 import { Redirect } from 'react-router-dom';
-import { Editor,EditorState } from 'draft-js';
+import { Editor, EditorState ,convertToRaw } from 'draft-js';
 import { stateToHTML } from 'draft-js-export-html';
-
 
 const styles = {
     editor: {
@@ -43,8 +42,10 @@ class Create extends Component {
         let token = sessionStorage.getItem('token');
         let title = this.state.title;
         let contentState = this.state.editorState.getCurrentContent();
+        let rawContent = convertToRaw(contentState);
         let content = stateToHTML(contentState);
-        console.log(content);
+console.log(rawContent);
+console.log(content);
 
         if(!token){
             console.log('无权限');
@@ -62,7 +63,7 @@ class Create extends Component {
         fetch("http://localhost:8000/index.php/tests?token="+token, {
                 method: "POST",
                 headers:{"Content-type":"application/x-www-form-urlencoded"},
-                body: "title="+title+"&content="+content,
+                body: "title="+title+"&editorState="+JSON.stringify(rawContent)+"&content="+content,
             })
                 .then(res => {
                     //console.log(res.status);
@@ -71,6 +72,7 @@ class Create extends Component {
                     }
                 })
                 .then(json =>{
+
                     this.setState({
                         id:json.id,
                     });
