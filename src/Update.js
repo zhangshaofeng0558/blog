@@ -1,8 +1,7 @@
 import React, { Component } from 'react';
 import { Redirect } from 'react-router-dom';
-import { Editor,EditorState } from 'draft-js';
+import { Editor,EditorState,convertFromRaw,convertToRaw} from 'draft-js';
 import { stateToHTML } from 'draft-js-export-html';
-
 
 const styles = {
     editor: {
@@ -22,13 +21,15 @@ class Update extends Component {
         super(props);
         this.state = {
             id:'',
-            blogData:'',
+            blogData:{},
             editorState: EditorState.createEmpty()
         };
+
         this.focus = () => this.refs.editor.focus();
         this.onChange = (editorState) => this.setState({editorState});
         this.handleTitle = this.handleTitle.bind(this);
         this.handleSubmit = this.handleSubmit.bind(this);
+
 
     }
 
@@ -40,9 +41,10 @@ class Update extends Component {
             .then(res => res.json())
             .then(
                 json => {
-                    console.log(json);
+                    //console.log(convertFromRaw(JSON.parse(json.editorState)));
                     this.setState({
                         blogData:json,
+                        editorState:EditorState.createWithContent(convertFromRaw(JSON.parse(json.editorState)))
                     })
                 })
             .catch(error => "异常处理");
@@ -60,7 +62,9 @@ class Update extends Component {
         let token = sessionStorage.getItem('token');
         let title = this.state.blogData.title;
         let contentState = this.state.editorState.getCurrentContent();
+        let rawContent = convertToRaw(contentState);
         let content = stateToHTML(contentState);
+        console.log(rawContent);
         console.log(content);
 
         if(!token){
@@ -79,7 +83,7 @@ class Update extends Component {
         fetch("http://localhost:8000/index.php/tests/"+id+"?token="+token, {
                 method: "PUT",
                 headers:{"Content-type":"application/x-www-form-urlencoded"},
-                body: "title="+title+"&content="+content,
+                body: "title="+title+"&editorState="+JSON.stringify(rawContent)+"&content="+content,
             })
                 .then(res => {
                     //console.log(res.status);
