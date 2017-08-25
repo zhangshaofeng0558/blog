@@ -1,6 +1,7 @@
 import React, { Component } from 'react';
 import fetch from 'node-fetch';
 import { Redirect } from 'react-router-dom';
+const url = "http://139.196.51.16:8000/index.php";
 class Login extends Component {
 
     constructor(props) {
@@ -28,7 +29,7 @@ class Login extends Component {
         let username = this.state.username;
         let password = this.state.password;
        // console.log(username);
-        fetch("http://localhost:8000/users/login", {
+        fetch(url+"/users/login", {
             method: "POST",
             headers:{"Content-type":"application/x-www-form-urlencoded"},
             body: "username="+username+"&password="+password,
@@ -52,9 +53,10 @@ class Login extends Component {
                 <Redirect to="/admin"/>
             )
         }
+
         return (
-                    <div className="container">
-                        <form className="form-signin">
+                    <div className="container" style={{marginTop:40}} >
+                        <form className="form-signin" >
                             <h2 className="form-signin-heading">Please login in</h2>
                             <label htmlFor="inputUsername" className="sr-only">Username</label>
                             <input type="email" id="inputUsername" className="form-control" placeholder="Username" value={this.state.username} onChange= {this.handleUsernameChange}/>
