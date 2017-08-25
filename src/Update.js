@@ -1,7 +1,8 @@
 import React, { Component } from 'react';
 import { Redirect } from 'react-router-dom';
 import { Editor,EditorState,convertFromRaw,convertToRaw} from 'draft-js';
-import { stateToHTML } from 'draft-js-export-html';
+import BackNavBar from "./BackNavBar";
+import BackSlideBar from "./BackSlideBar";
 
 const styles = {
     editor: {
@@ -14,6 +15,7 @@ const styles = {
     },
 
 };
+const url = "http://139.196.51.16:8000/index.php/articles";
 
 class Update extends Component {
 
@@ -21,7 +23,7 @@ class Update extends Component {
         super(props);
         this.state = {
             id:'',
-            blogData:{},
+            title:'',
             editorState: EditorState.createEmpty()
         };
 
@@ -37,14 +39,15 @@ class Update extends Component {
 
         let id = this.props.match.params.id;
         //console.log(id);
-        fetch("http://localhost:8000/index.php/tests/"+id)
+        fetch(url+"/"+id)
             .then(res => res.json())
             .then(
                 json => {
-                    //console.log(convertFromRaw(JSON.parse(json.editorState)));
+                    const contentState = convertFromRaw(JSON.parse(json.content));
+                    //console.log(contentState);
                     this.setState({
-                        blogData:json,
-                        editorState:EditorState.createWithContent(convertFromRaw(JSON.parse(json.editorState)))
+                        title:json.title,
+                        editorState:EditorState.createWithContent(contentState),
                     })
                 })
             .catch(error => "异常处理");
@@ -52,38 +55,32 @@ class Update extends Component {
 
     handleTitle(e){
         this.setState({
-            blogData:{title:e.target.value}
+            title:e.target.value
         })
     }
 
     handleSubmit(e){
         e.preventDefault();
-        let id = this.props.match.params.id;
-        let token = sessionStorage.getItem('token');
-        let title = this.state.blogData.title;
-        let contentState = this.state.editorState.getCurrentContent();
-        let rawContent = convertToRaw(contentState);
-        let content = stateToHTML(contentState);
-        console.log(rawContent);
-        console.log(content);
 
+        const token = sessionStorage.getItem('token');
         if(!token){
             console.log('无权限');
             return false;
         }
+        const title = this.state.title;
         if(!title){
             console.log('标题不能为空');
             return false;
         }
-        if(!content){
-            console.log('内容不能为空');
-            return false;
-        }
+        const contentState = this.state.editorState.getCurrentContent();
+        const content = JSON.stringify(convertToRaw(contentState));
+        //console.log(content);
+        const id = this.props.match.params.id;
 
-        fetch("http://localhost:8000/index.php/tests/"+id+"?token="+token, {
+        fetch(url+"/"+id+"?token="+token, {
                 method: "PUT",
                 headers:{"Content-type":"application/x-www-form-urlencoded"},
-                body: "title="+title+"&editorState="+JSON.stringify(rawContent)+"&content="+content,
+                body: "title="+title+"&content="+content,
             })
                 .then(res => {
                     //console.log(res.status);
@@ -95,19 +92,21 @@ class Update extends Component {
                     this.setState({
                         id:json.id,
                     });
-                }).catch(error => console.log("异常处理"));
+                })
+                .catch(error => console.log("异常处理"));
 
     }
 
     render() {
 
-         let token = sessionStorage.getItem('token');
+         const token = sessionStorage.getItem('token');
          if(!token){
              return (
                  <Redirect to="/login" />
              )
          }
-         let id = this.state.id;
+
+         const id = this.state.id;
          if(id){
             return (
                 <Redirect to={"/view/"+id} />
@@ -116,53 +115,11 @@ class Update extends Component {
 
         return (
             <div>
-                <nav className="navbar navbar-inverse navbar-fixed-top">
-                    <div className="container-fluid">
-                        <div className="navbar-header">
-                            <button type="button" className="navbar-toggle collapsed" data-toggle="collapse" data-target="#navbar" aria-expanded="false" aria-controls="navbar">
-                                <span className="sr-only">Toggle navigation</span>
-                                <span className="icon-bar"></span>
-                                <span className="icon-bar"></span>
-                                <span className="icon-bar"></span>
-                            </button>
-                            <a className="navbar-brand" href="http://v3.bootcss.com/examples/dashboard/#">Project name</a>
-                        </div>
-                        <div id="navbar" className="navbar-collapse collapse">
-                            <ul className="nav navbar-nav navbar-right">
-                                <li><a href="http://v3.bootcss.com/examples/dashboard/#">Dashboard</a></li>
-                                <li><a href="http://v3.bootcss.com/examples/dashboard/#">Settings</a></li>
-                                <li><a href="http://v3.bootcss.com/examples/dashboard/#">Profile</a></li>
-                                <li><a href="http://v3.bootcss.com/examples/dashboard/#">Help</a></li>
-                            </ul>
-                            <form className="navbar-form navbar-right">
-                                <input type="text" className="form-control" placeholder="Search..." />
-                            </form>
-                        </div>
-                    </div>
-                </nav>
+                <BackNavBar/>
 
                 <div className="container-fluid">
                     <div className="row">
-                        <div className="col-sm-3 col-md-2 sidebar">
-                            <ul className="nav nav-sidebar">
-                                <li className="active"><a href="http://v3.bootcss.com/examples/dashboard/#">Overview <span className="sr-only">(current)</span></a></li>
-                                <li><a href="http://v3.bootcss.com/examples/dashboard/#">Reports</a></li>
-                                <li><a href="http://v3.bootcss.com/examples/dashboard/#">Analytics</a></li>
-                                <li><a href="http://v3.bootcss.com/examples/dashboard/#">Export</a></li>
-                            </ul>
-                            <ul className="nav nav-sidebar">
-                                <li><a href="http://v3.bootcss.com/examples/dashboard/">Nav item</a></li>
-                                <li><a href="http://v3.bootcss.com/examples/dashboard/">Nav item again</a></li>
-                                <li><a href="http://v3.bootcss.com/examples/dashboard/">One more nav</a></li>
-                                <li><a href="http://v3.bootcss.com/examples/dashboard/">Another nav item</a></li>
-                                <li><a href="http://v3.bootcss.com/examples/dashboard/">More navigation</a></li>
-                            </ul>
-                            <ul className="nav nav-sidebar">
-                                <li><a href="http://v3.bootcss.com/examples/dashboard/">Nav item again</a></li>
-                                <li><a href="http://v3.bootcss.com/examples/dashboard/">One more nav</a></li>
-                                <li><a href="http://v3.bootcss.com/examples/dashboard/">Another nav item</a></li>
-                            </ul>
-                        </div>
+                       <BackSlideBar/>
                         <div className="col-sm-9 col-sm-offset-3 col-md-10 col-md-offset-2 main">
                             <h1 className="page-header">Dashboard</h1>
 
@@ -171,7 +128,7 @@ class Update extends Component {
                                     <form>
                                         <div className="form-group">
                                             <label htmlFor="InputTitle">Title</label>
-                                            <input type="text" className="form-control" id="InputTitle" placeholder="Title" value={this.state.blogData.title} onChange={this.handleTitle}/>
+                                            <input type="text" className="form-control" id="InputTitle" placeholder="Title" value={this.state.title} onChange={this.handleTitle}/>
                                         </div>
                                         <div className="form-group">
                                             <div style={styles.editor} onClick={this.focus}>
