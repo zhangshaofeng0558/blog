@@ -1,7 +1,8 @@
 import React, { Component } from 'react';
 import { Redirect } from 'react-router-dom';
+import BackNavBar from "./BackNavBar";
+import BackSlideBar from "./BackSlideBar";
 import { Editor, EditorState ,convertToRaw } from 'draft-js';
-import { stateToHTML } from 'draft-js-export-html';
 
 const styles = {
     editor: {
@@ -14,6 +15,7 @@ const styles = {
     },
 
 };
+const url = "http://139.196.51.16:8000/index.php/articles";
 
 class Create extends Component {
 
@@ -22,7 +24,7 @@ class Create extends Component {
         this.state = {
             id:'',
             title:'',
-            editorState: EditorState.createEmpty()
+            editorState: EditorState.createEmpty(),
         };
         this.focus = () => this.refs.editor.focus();
         this.onChange = (editorState) => this.setState({editorState});
@@ -30,8 +32,6 @@ class Create extends Component {
         this.handleSubmit = this.handleSubmit.bind(this);
 
     }
-
-    componentDidMount(){}
 
     handleTitle(e){
         this.setState({title:e.target.value})
@@ -42,10 +42,8 @@ class Create extends Component {
         let token = sessionStorage.getItem('token');
         let title = this.state.title;
         let contentState = this.state.editorState.getCurrentContent();
-        let rawContent = convertToRaw(contentState);
-        let content = stateToHTML(contentState);
-console.log(rawContent);
-console.log(content);
+        let content = JSON.stringify(convertToRaw(contentState));
+        //console.log(content);
 
         if(!token){
             console.log('无权限');
@@ -60,11 +58,11 @@ console.log(content);
             return false;
         }
 
-        fetch("http://localhost:8000/index.php/tests?token="+token, {
+        fetch(url+"?token="+token, {
                 method: "POST",
                 headers:{"Content-type":"application/x-www-form-urlencoded"},
-                body: "title="+title+"&editorState="+JSON.stringify(rawContent)+"&content="+content,
-            })
+                body: "title="+title+"&content="+content,
+        })
                 .then(res => {
                     //console.log(res.status);
                     if(res.status === 201){
@@ -72,11 +70,11 @@ console.log(content);
                     }
                 })
                 .then(json =>{
-
                     this.setState({
                         id:json.id,
                     });
-                }).catch(error => console.log("异常处理"));
+                })
+                .catch(error => console.log("异常处理"));
 
     }
 
@@ -89,6 +87,7 @@ console.log(content);
              )
          }
          let id = this.state.id;
+
          if(id){
             return (
                 <Redirect to={"/view/"+id} />
@@ -97,53 +96,11 @@ console.log(content);
 
         return (
             <div>
-                <nav className="navbar navbar-inverse navbar-fixed-top">
-                    <div className="container-fluid">
-                        <div className="navbar-header">
-                            <button type="button" className="navbar-toggle collapsed" data-toggle="collapse" data-target="#navbar" aria-expanded="false" aria-controls="navbar">
-                                <span className="sr-only">Toggle navigation</span>
-                                <span className="icon-bar"></span>
-                                <span className="icon-bar"></span>
-                                <span className="icon-bar"></span>
-                            </button>
-                            <a className="navbar-brand" href="http://v3.bootcss.com/examples/dashboard/#">Project name</a>
-                        </div>
-                        <div id="navbar" className="navbar-collapse collapse">
-                            <ul className="nav navbar-nav navbar-right">
-                                <li><a href="http://v3.bootcss.com/examples/dashboard/#">Dashboard</a></li>
-                                <li><a href="http://v3.bootcss.com/examples/dashboard/#">Settings</a></li>
-                                <li><a href="http://v3.bootcss.com/examples/dashboard/#">Profile</a></li>
-                                <li><a href="http://v3.bootcss.com/examples/dashboard/#">Help</a></li>
-                            </ul>
-                            <form className="navbar-form navbar-right">
-                                <input type="text" className="form-control" placeholder="Search..." />
-                            </form>
-                        </div>
-                    </div>
-                </nav>
+                <BackNavBar />
 
                 <div className="container-fluid">
                     <div className="row">
-                        <div className="col-sm-3 col-md-2 sidebar">
-                            <ul className="nav nav-sidebar">
-                                <li className="active"><a href="http://v3.bootcss.com/examples/dashboard/#">Overview <span className="sr-only">(current)</span></a></li>
-                                <li><a href="http://v3.bootcss.com/examples/dashboard/#">Reports</a></li>
-                                <li><a href="http://v3.bootcss.com/examples/dashboard/#">Analytics</a></li>
-                                <li><a href="http://v3.bootcss.com/examples/dashboard/#">Export</a></li>
-                            </ul>
-                            <ul className="nav nav-sidebar">
-                                <li><a href="http://v3.bootcss.com/examples/dashboard/">Nav item</a></li>
-                                <li><a href="http://v3.bootcss.com/examples/dashboard/">Nav item again</a></li>
-                                <li><a href="http://v3.bootcss.com/examples/dashboard/">One more nav</a></li>
-                                <li><a href="http://v3.bootcss.com/examples/dashboard/">Another nav item</a></li>
-                                <li><a href="http://v3.bootcss.com/examples/dashboard/">More navigation</a></li>
-                            </ul>
-                            <ul className="nav nav-sidebar">
-                                <li><a href="http://v3.bootcss.com/examples/dashboard/">Nav item again</a></li>
-                                <li><a href="http://v3.bootcss.com/examples/dashboard/">One more nav</a></li>
-                                <li><a href="http://v3.bootcss.com/examples/dashboard/">Another nav item</a></li>
-                            </ul>
-                        </div>
+                        <BackSlideBar/>
                         <div className="col-sm-9 col-sm-offset-3 col-md-10 col-md-offset-2 main">
                             <h1 className="page-header">Dashboard</h1>
 
