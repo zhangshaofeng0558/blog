@@ -15,7 +15,7 @@ const styles = {
     },
 
 };
-const url = "http://139.196.51.16:8000/index.php/articles";
+const url = "http://106.14.113.101:8000/index.php/articles";
 
 class Update extends Component {
 
