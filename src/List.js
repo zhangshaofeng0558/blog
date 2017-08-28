@@ -20,21 +20,21 @@ class List extends Component {
           )
       });
     return (
-        <div className="table-responsive">
-            <table className="table table-striped">
-                <thead>
-                <tr>
-                    <th>id</th>
-                    <th>标题</th>
-                    <th>时间</th>
-                    <th>操作</th>
-                </tr>
-                </thead>
-                <tbody>
-                {blogLists}
-                </tbody>
-            </table>
-        </div>
+            <div className="table-responsive">
+                <table className="table table-striped">
+                    <thead>
+                    <tr>
+                        <th>id</th>
+                        <th>标题</th>
+                        <th>时间</th>
+                        <th>操作</th>
+                    </tr>
+                    </thead>
+                    <tbody>
+                    {blogLists}
+                    </tbody>
+                </table>
+            </div>
     );
   }
 }

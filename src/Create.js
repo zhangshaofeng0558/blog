@@ -12,6 +12,7 @@ const styles = {
         cursor: 'text',
         minHeight: 200,
         padding: 5,
+        minWidth:280,
     },
 
 };

@@ -20,16 +20,26 @@ class App extends Component {
     }
 
     PageClick(e) {
-
+        e.preventDefault();
         const text = e.target.text;
+        let currentPage = this.state.currentPage;
+        console.log(currentPage);
+        const pageCount = sessionStorage.getItem("pageCount");
+        let page = 0;
         if(text === 'Next'){
-            this.state.currentPage ++;
+            if(currentPage < pageCount){
+                this.state.currentPage ++ ;
+                page = this.state.currentPage;
+            }
         }else{
-            this.state.currentPage --;
+            if(currentPage > 1) {
+                this.state.currentPage -- ;
+                page = this.state.currentPage;
+            }
         }
-        //console.log(this.state.currentPage);
-        const currentPage = this.state.currentPage;
-        fetch(url+"?expand=time&page="+currentPage)
+        console.log(page);
+        if(!page)return false;
+        fetch(url+"?expand=time&page="+page)
             .then(res => {
                 if(res.status === 200) return res.json();
                 throw "request error";
@@ -37,7 +47,7 @@ class App extends Component {
             .then(
                 json => {
                     this.setState({
-                        'blogData':json,
+                        blogData:json,
                     })
                 })
             .catch(error=>"异常处理");
@@ -46,7 +56,10 @@ class App extends Component {
          fetch(url+"?expand=time")
              .then(res => {
                  //console.log(res.status);
-                 if(res.status === 200) return res.json();
+                 if(res.status === 200) {
+                     sessionStorage.setItem("pageCount", res.headers.get('X-Pagination-Page-Count'));
+                     return res.json();
+                 }
                  throw "request error";
              })
              .then(
@@ -73,11 +86,11 @@ class App extends Component {
                     <Header />
                     <div className="container">
                         <div className="blog-header">
-                            <h1 className="blog-title">The Bootstrap Autobiography</h1>
-                            <p className="lead blog-description">The official example template of creating a blog with Bootstrap.</p>
+                            <h1 className="blog-title">My diary</h1>
+                            <p className="lead blog-description">记录一段人生</p>
                         </div>
                         <div className="row">
-                            <Main blogData={this.state.blogData} PageClick={this.PageClick}/>
+                            <Main blogData={this.state.blogData} PageClick={this.PageClick} />
                             <Sidebar />
                         </div>
                     </div>

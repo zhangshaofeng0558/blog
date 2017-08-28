@@ -1,5 +1,5 @@
 import React, { Component } from 'react';
-import { Redirect } from 'react-router-dom';
+import { Link, Redirect } from 'react-router-dom';
 import List from './List';
 import BackNavBar from "./BackNavBar";
 import BackSlideBar from "./BackSlideBar";
@@ -9,9 +9,12 @@ class Admin extends Component {
     constructor(props) {
         super(props);
         this.state = {
+            currentPage:1,
             blogList:[],
         };
+        this.pageClick = this.pageClick.bind(this);
         this.handleDelete = this.handleDelete.bind(this);
+
     }
 
     handleDelete(e){
@@ -24,6 +27,21 @@ class Admin extends Component {
                 //return res.json();
             })
              .catch(error => "异常处理");
+    }
+
+    pageClick(e) {
+        e.preventDefault();
+        const text = e.target.text;
+        let page = (text === 'Next') ? ++this.state.currentPage : --this.state.currentPage;
+        fetch(url+"?page="+page)
+            .then(res => res.json())
+            .then(
+                json => {
+                    this.setState({
+                        blogList:json,
+                    })
+                })
+            .catch(error=>"异常处理");
     }
 
     componentDidMount(){
@@ -55,7 +73,14 @@ class Admin extends Component {
                         <BackSlideBar/>
                         <div className="col-sm-9 col-sm-offset-3 col-md-10 col-md-offset-2 main" >
                             <h2 className="sub-header">博客列表</h2>
+                            <Link to="/create"><h4>创建</h4></Link>
                             <List blogList={this.state.blogList} handleDelete = {this.handleDelete}/>
+                            <nav>
+                                <ul className="pager" style={{textAlign:"center"}}>
+                                    <li><Link to="" onClick={this.pageClick}>Previous</Link></li>
+                                    <li><Link to="" onClick={this.pageClick}>Next</Link></li>
+                                </ul>
+                            </nav>
                         </div>
                     </div>
                 </div>
