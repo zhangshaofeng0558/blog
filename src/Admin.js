@@ -20,10 +20,20 @@ class Admin extends Component {
     handleDelete(e){
         e.preventDefault();
         const token = sessionStorage.getItem('token');
-        const id = e.target.title;
+        const target = e.target;
+        const id = target.title;
+        const stateContent = target.text;
+        console.log(stateContent);
         fetch(url+"/"+id+"?token="+token,{method:"DELETE"})
             .then(res => {
                 console.log(res.status);
+                if(res.status === 204){
+                    if(stateContent === '隐藏'){
+                        target.text = '显示';
+                    }else{
+                        target.text = '隐藏';
+                    }
+                }
                 //return res.json();
             })
              .catch(error => "异常处理");
@@ -33,7 +43,7 @@ class Admin extends Component {
         e.preventDefault();
         const text = e.target.text;
         let page = (text === 'Next') ? ++this.state.currentPage : --this.state.currentPage;
-        fetch(url+"?page="+page)
+        fetch(url+"?back=1&page="+page)
             .then(res => res.json())
             .then(
                 json => {
@@ -45,7 +55,7 @@ class Admin extends Component {
     }
 
     componentDidMount(){
-        fetch(url)
+        fetch(url+"?back=1")
             .then(res => res.json())
             .then(
                 json => {
