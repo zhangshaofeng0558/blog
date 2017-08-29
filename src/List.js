@@ -3,9 +3,9 @@ import { Link } from 'react-router-dom';
 class List extends Component {
   render() {
       const handleDelete = this.props.handleDelete;
-      var blogLists=[];
+      const blogLists=[];
       this.props.blogList.forEach(function(value,key){
-
+          const stateContent = value.state ? "显示" : "隐藏";
           blogLists.push(
               <tr key={key}>
                   <td>{value.id}</td>
@@ -14,7 +14,7 @@ class List extends Component {
                   <td>
                       <Link to={"/view/"+value.id } >查看</Link>
                       <Link to={"/update/"+value.id }>修改</Link>
-                      <Link to="" title={value.id} onClick={handleDelete}>删除</Link>
+                      <Link to="" title={value.id} onClick={handleDelete}>{stateContent}</Link>
                   </td>
               </tr>
           )
