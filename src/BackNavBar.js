@@ -1,8 +1,6 @@
 import React, { Component } from 'react';
 import { Link } from 'react-router-dom';
-const url = "http://localhost:8000/index.php";
 class BackNavBar extends Component {
-
     handleLogout(e){
         sessionStorage.removeItem('token');
     }

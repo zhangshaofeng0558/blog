@@ -16,7 +16,7 @@ class Error extends Component {
                         <div className="container">
                             <div id="navbar" className="collapse navbar-collapse">
                                 <ul className="nav navbar-nav">
-                                    <li><NavLink to="/">首页</NavLink></li>
+                                    <li><NavLink to="/"></NavLink></li>
                                 </ul>
                             </div>
                         </div>

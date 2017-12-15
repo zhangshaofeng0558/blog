@@ -4,8 +4,6 @@ import Header from './Header';
 import Main from './Main';
 import Sidebar from './Sidebar';
 import Footer from './Footer';
-import fetch from 'node-fetch';
-
 const url = "http://106.14.113.101:8000/index.php/articles";
 class App extends Component {
 
@@ -42,7 +40,6 @@ class App extends Component {
         fetch(url+"?expand=time&page="+page)
             .then(res => {
                 if(res.status === 200) return res.json();
-                throw "request error";
             })
             .then(
                 json => {
@@ -60,7 +57,6 @@ class App extends Component {
                      sessionStorage.setItem("pageCount", res.headers.get('X-Pagination-Page-Count'));
                      return res.json();
                  }
-                 throw "request error";
              })
              .then(
                  json => {
@@ -78,6 +74,12 @@ class App extends Component {
         if(error === 1){
             return (
                 <Redirect to="/error"/>
+            )
+        }
+        const token = sessionStorage.getItem('token');
+        if(!token){
+            return (
+                <Redirect to="/login"/>
             )
         }
         return (

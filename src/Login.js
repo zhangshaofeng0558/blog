@@ -1,5 +1,4 @@
 import React, { Component } from 'react';
-import fetch from 'node-fetch';
 import { Redirect } from 'react-router-dom';
 const url = "http://106.14.113.101:8000/index.php";
 class Login extends Component {
