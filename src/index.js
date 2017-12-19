@@ -8,6 +8,7 @@ import View from './View';
 import Create from './Create';
 import Update from './Update';
 import Error from './Error';
+import 'bootstrap/dist/css/bootstrap.css';
 import './blog.css';
 import './dashboard.css';
 import './signin.css';
