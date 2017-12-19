@@ -9,7 +9,6 @@ class Main extends Component {
       this.props.blogData.forEach(function(value,key){
           const contentState = convertFromRaw(JSON.parse(value.content));
           const content = stateToHTML(contentState);
-
           //console.log(date);
           blogLists.push(
               <div className="blog-post" key={key}>
@@ -25,7 +24,7 @@ class Main extends Component {
                 <nav>
                     <ul className="pager">
                         <li><Link to="" onClick={this.props.PageClick}>Previous</Link></li>
-                            <li><Link to="" onClick={this.props.PageClick}>Next</Link></li>
+                        <li><Link to="" onClick={this.props.PageClick}>Next</Link></li>
 
                     </ul>
                 </nav>

@@ -1,8 +1,7 @@
 import React, { Component } from 'react';
-import { Redirect } from 'react-router-dom';
-const url = "http://106.14.113.101:8000/index.php";
+import {Redirect } from 'react-router-dom';
+const url = "http://www.zhangshaofeng.top:8000/index.php";
 class Login extends Component {
-
     constructor(props) {
         super(props);
         this.state = {
@@ -47,12 +46,7 @@ class Login extends Component {
 
     render() {
         let token = this.state.token ? this.state.token === sessionStorage.getItem("token")  : sessionStorage.getItem("token");
-        if(token){
-            return (
-                <Redirect to="/admin"/>
-            )
-        }
-
+        if(token) return <Redirect to="/" />;
         return (
                     <div className="container" style={{marginTop:40}} >
                         <form className="form-signin" >

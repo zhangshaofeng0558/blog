@@ -16,8 +16,7 @@ const styles = {
     },
 
 };
-const url = "http://106.14.113.101:8000/index.php/articles";
-
+const url = "http://www.zhangshaofeng.top:8000/index.php/articles";
 class Create extends Component {
 
     constructor(props) {
@@ -82,19 +81,9 @@ class Create extends Component {
     render() {
 
          let token = sessionStorage.getItem('token');
-         if(!token){
-             return (
-                 <Redirect to="/login" />
-             )
-         }
+         if(!token) return <Redirect to="/login" />;
          let id = this.state.id;
-
-         if(id){
-            return (
-                <Redirect to={"/view/"+id} />
-            )
-         }
-
+         if(id) return <Redirect to={"/view/"+id} />;
         return (
             <div>
                 <BackNavBar />

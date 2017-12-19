@@ -3,7 +3,7 @@ import { Link, Redirect } from 'react-router-dom';
 import List from './List';
 import BackNavBar from "./BackNavBar";
 import BackSlideBar from "./BackSlideBar";
-const url = "http://106.14.113.101:8000/index.php/articles";
+const url = "http://zhangshaofeng.top:8000/index.php/articles";
 class Admin extends Component {
 
     constructor(props) {
@@ -67,17 +67,11 @@ class Admin extends Component {
             .catch(error => "异常处理");
     }
     render() {
-         const token = sessionStorage.getItem('token');
-         if(!token){
-             return (
-                 <Redirect to="/login"/>
-             )
-        }
-
+        const token = sessionStorage.getItem('token');
+        if(!token) return <Redirect to="/login" />;
         return (
             <div>
                 <BackNavBar />
-
                 <div className="container-fluid">
                     <div className="row">
                         <BackSlideBar/>

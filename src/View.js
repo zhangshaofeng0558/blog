@@ -5,7 +5,7 @@ import { stateToHTML } from 'draft-js-export-html';
 import BackNavBar from "./BackNavBar";
 import BackSlideBar from "./BackSlideBar";
 
-const url = "http://106.14.113.101:8000/index.php/articles";
+const url = "http://www.zhangshaofeng.top:8000/index.php/articles";
 class View extends Component {
 
     constructor(props) {
@@ -35,11 +35,7 @@ class View extends Component {
     render() {
 
         const token = sessionStorage.getItem('token');
-        if(!token){
-            return (
-                <Redirect to="/login"/>
-            )
-        }
+        if(!token)return <Redirect to="/login"/>;
         return (
             <div>
                 <BackNavBar/>

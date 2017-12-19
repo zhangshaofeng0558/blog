@@ -1,12 +1,11 @@
 import React, { Component } from 'react';
-import { Redirect } from 'react-router-dom';
+import {Redirect } from 'react-router-dom';
 import Header from './Header';
 import Main from './Main';
 import Sidebar from './Sidebar';
 import Footer from './Footer';
-const url = "http://106.14.113.101:8000/index.php/articles";
+const url = "http://www.zhangshaofeng.top:8000/index.php/articles";
 class App extends Component {
-
     constructor(props) {
         super(props);
         this.state = {
@@ -16,27 +15,18 @@ class App extends Component {
         };
         this.PageClick = this.PageClick.bind(this);
     }
-
     PageClick(e) {
         e.preventDefault();
         const text = e.target.text;
-        let currentPage = this.state.currentPage;
-        console.log(currentPage);
         const pageCount = sessionStorage.getItem("pageCount");
-        let page = 0;
-        if(text === 'Next'){
-            if(currentPage < pageCount){
-                this.state.currentPage ++ ;
-                page = this.state.currentPage;
-            }
+        if(text === 'Next' && this.state.currentPage < pageCount ){
+            this.state.currentPage ++ ;
+        }else if(text === 'Previous' && this.state.currentPage >1 ){
+            this.state.currentPage -- ;
         }else{
-            if(currentPage > 1) {
-                this.state.currentPage -- ;
-                page = this.state.currentPage;
-            }
+            return false;
         }
-        console.log(page);
-        if(!page)return false;
+        let page = this.state.currentPage;
         fetch(url+"?expand=time&page="+page)
             .then(res => {
                 if(res.status === 200) return res.json();
@@ -64,26 +54,17 @@ class App extends Component {
                  })
              .catch(
                  error=>{
-                    console.log(error);
+                    //console.log(error);
                     this.setState({isRequestError:1})
              });
     }
 
     render() {
         const error = this.state.isRequestError;
-        if(error === 1){
-            return (
-                <Redirect to="/error"/>
-            )
-        }
+        if(error === 1) return <Redirect to="/error" />;
         const token = sessionStorage.getItem('token');
-        if(!token){
-            return (
-                <Redirect to="/login"/>
-            )
-        }
+        if(!token) return <Redirect to="/login" />;
         return (
-
                 <div>
                     <Header />
                     <div className="container">
@@ -101,5 +82,4 @@ class App extends Component {
         );
     }
 }
-
 export default App;
